@@ -4,6 +4,7 @@ import axios from "axios";
 import "./DashBoard.css";
 
 const API = import.meta.env.VITE_API_URL;
+console.log("API URL:", API);
 
 const Dashboard = () => {
   const navigate = useNavigate();
