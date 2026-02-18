@@ -23,7 +23,7 @@ const Dashboard = () => {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/bills", {
+      const res = await axios.get("https://smart-bill-manager.onrender.com/api/bills", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -40,7 +40,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
-        "http://localhost:5000/api/users/update-budget",
+        "https://smart-bill-manager.onrender.com/api/users/update-budget",
         { monthlyBudget: budget },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -59,7 +59,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
 
-      await axios.delete(`http://localhost:5000/api/bills/${id}`, {
+      await axios.delete(`https://smart-bill-manager.onrender.com/api/bills/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
