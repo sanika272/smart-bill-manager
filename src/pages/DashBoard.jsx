@@ -3,16 +3,15 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./DashBoard.css";
 
+const API = import.meta.env.VITE_API_URL;
+
 const Dashboard = () => {
   const navigate = useNavigate();
-
   const user = JSON.parse(localStorage.getItem("user"));
+
   const [bills, setBills] = useState([]);
   const [budget, setBudget] = useState(user?.monthlyBudget || 0);
 
-  const API = import.meta.env.VITE_API_URL;
-
-  // ================= FETCH BILLS =================
   const fetchBills = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -35,7 +34,6 @@ const Dashboard = () => {
     }
   };
 
-  // ================= UPDATE BUDGET =================
   const handleBudgetUpdate = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -54,7 +52,6 @@ const Dashboard = () => {
     }
   };
 
-  // ================= DELETE BILL =================
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -69,7 +66,6 @@ const Dashboard = () => {
     }
   };
 
-  // ================= NOTIFICATIONS =================
   const checkNotifications = (billsData) => {
     if (!Array.isArray(billsData)) return;
 
@@ -84,7 +80,7 @@ const Dashboard = () => {
 
       if (!bill.paid) {
         if (dueDate < today && !localStorage.getItem(notificationKey)) {
-          alert(`⚠️ Bill Overdue: ${bill.category} (₹${bill.amount})`);
+          alert(`Bill Overdue: ${bill.category} (₹${bill.amount})`);
           localStorage.setItem(notificationKey, "true");
         }
 
@@ -96,7 +92,7 @@ const Dashboard = () => {
           !localStorage.getItem(notificationKey)
         ) {
           alert(
-            `⏰ Bill Due Soon: ${bill.category} in ${Math.ceil(diffDays)} day(s)`
+            `Bill Due Soon: ${bill.category} in ${Math.ceil(diffDays)} day(s)`
           );
           localStorage.setItem(notificationKey, "true");
         }
@@ -104,125 +100,53 @@ const Dashboard = () => {
     });
   };
 
-  // ================= USE EFFECT =================
   useEffect(() => {
     fetchBills();
-
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const todayDate = today.getDate();
-
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
-    if (
-      todayDate === 1 &&
-      storedUser &&
-      storedUser.budgetMonth !== currentMonth
-    ) {
-      alert("Please set your budget for this month!");
-    }
   }, []);
 
-  // ================= CALCULATIONS =================
   const totalBills = bills.length;
-  const totalAmount = bills.reduce((sum, bill) => sum + Number(bill.amount), 0);
+  const totalAmount = bills.reduce(
+    (sum, bill) => sum + Number(bill.amount),
+    0
+  );
   const unpaidBills = bills.filter((bill) => !bill.paid).length;
   const budgetExceeded = totalAmount > budget;
 
-  // ================= UI =================
   return (
     <div className="dashboard">
       <div className="navbar">
         <h2>Welcome {user?.name || "User"}</h2>
-        <div className="nav-right">
-          <button
-            onClick={() => {
-              localStorage.removeItem("token");
-              localStorage.removeItem("user");
-              navigate("/login");
-            }}
-          >
-            Logout
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login");
+          }}
+        >
+          Logout
+        </button>
       </div>
 
       <div className="budget-section">
         <h3>Set Monthly Budget</h3>
-        <div className="budget-input-group">
-          <input
-            type="number"
-            value={budget}
-            onChange={(e) => setBudget(Number(e.target.value))}
-          />
-          <button onClick={handleBudgetUpdate}>Save</button>
-        </div>
+        <input
+          type="number"
+          value={budget}
+          onChange={(e) => setBudget(Number(e.target.value))}
+        />
+        <button onClick={handleBudgetUpdate}>Save</button>
 
         {budgetExceeded && (
-          <p style={{ color: "red", marginTop: "10px" }}>
-            ⚠ You exceeded your monthly budget by ₹{totalAmount - budget}
+          <p style={{ color: "red" }}>
+            You exceeded your monthly budget by ₹{totalAmount - budget}
           </p>
         )}
       </div>
 
       <div className="summary">
-        <div className="card">
-          <h4>Total Bills</h4>
-          <p>{totalBills}</p>
-        </div>
-        <div className="card">
-          <h4>Total Amount</h4>
-          <p>₹ {totalAmount}</p>
-        </div>
-        <div className="card">
-          <h4>Unpaid Bills</h4>
-          <p>{unpaidBills}</p>
-        </div>
-      </div>
-
-      <div className="actions">
-        <div className="action-card" onClick={() => navigate("/add-bill")}>
-          ➕ Add Bill
-        </div>
-        <div className="action-card" onClick={() => navigate("/bills")}>
-          📋 All Bills
-        </div>
-        <div className="action-card" onClick={() => navigate("/reports")}>
-          📊 Reports
-        </div>
-      </div>
-
-      <div className="upcoming">
-        <h3>Your Bills</h3>
-        {bills.length === 0 ? (
-          <p>No bills added yet</p>
-        ) : (
-          bills.map((bill) => (
-            <div key={bill._id} className="bill-row">
-              <span>{bill.category}</span>
-              <span>₹ {bill.amount}</span>
-              <span>{new Date(bill.dueDate).toLocaleDateString()}</span>
-              <span>{bill.paid ? "Paid" : "Unpaid"}</span>
-
-              {bill.paid && (
-                <button
-                  style={{
-                    marginLeft: "10px",
-                    background: "red",
-                    color: "white",
-                    border: "none",
-                    padding: "5px 10px",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleDelete(bill._id)}
-                >
-                  Delete
-                </button>
-              )}
-            </div>
-          ))
-        )}
+        <p>Total Bills: {totalBills}</p>
+        <p>Total Amount: ₹{totalAmount}</p>
+        <p>Unpaid Bills: {unpaidBills}</p>
       </div>
     </div>
   );
