@@ -1,0 +1,29 @@
+
+.reports-page {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #f5f7ff, #eef1ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reports-box {
+  width: 90%;
+  max-width: 1000px;
+  background: white;
+  padding: 32px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.reports-box h2 {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.chart-container {
+  max-width: 400px;
+  margin: 40px auto;
+}
+
