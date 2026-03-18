@@ -35,6 +35,10 @@ isRecurring: {
 emailSentToday: {
   type: Boolean,
   default: false
+},
+lastGeneratedDate: {
+  type: Date,
+  default: null
 }
 
 });

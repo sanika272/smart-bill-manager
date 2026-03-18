@@ -155,10 +155,6 @@
 
 // export default Dashboard;
 
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -202,7 +198,7 @@ const Dashboard = () => {
       const res = await axios.put(
         `${API}/api/users/update-budget`,
         { monthlyBudget: budget },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -212,7 +208,7 @@ const Dashboard = () => {
     }
   };
 
-  // ✅ Delete Bill 
+  // ✅ Delete Bill
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -228,15 +224,12 @@ const Dashboard = () => {
   };
 
   const totalBills = bills.length;
-  const totalAmount = bills.reduce(
-    (sum, bill) => sum + Number(bill.amount),
-    0
-  );
+  const totalAmount = bills.reduce((sum, bill) => sum + Number(bill.amount), 0);
   const unpaidBills = bills.filter((bill) => !bill.paid).length;
-
+  const isExceeded = totalAmount > budget;
+  const exceededAmount = totalAmount - budget;
   return (
     <div className="dashboard">
-
       {/* Navbar */}
       <div className="navbar">
         <h2>Welcome {user?.name || "User"}</h2>
@@ -297,6 +290,11 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {totalAmount > budget && (
+        <p style={{ color: "red", fontWeight: "bold" }}>
+          ⚠️ You have exceeded your monthly budget by ₹ {exceededAmount}
+        </p>
+      )}
       {/* Bills Section */}
       <div className="upcoming">
         <h3>Your Bills</h3>
@@ -324,7 +322,6 @@ const Dashboard = () => {
           </div>
         ))}
       </div>
-
     </div>
   );
 };
