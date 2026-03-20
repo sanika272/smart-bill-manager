@@ -28,6 +28,7 @@ function Login() {
       try {
         data = await res.json();
       } catch (jsonErr) {
+        console.error("Failed to parse JSON:", err);
         setError("Server returned invalid response");
         return;
       }
