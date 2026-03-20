@@ -8,6 +8,7 @@ import {
 } from "chart.js";
 import "./Reports.css";
 
+const BASE_URL = "https://smart-bill-manager-1.onrender.com";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function Reports() {
@@ -20,7 +21,7 @@ function Reports() {
   const fetchBills = async () => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch("/api/bills", {
+    const res = await fetch(`${BASE_URL}/api/bills`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

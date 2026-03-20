@@ -155,12 +155,13 @@
 
 // export default Dashboard;
 
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./DashBoard.css";
 
-const API = import.meta.env.VITE_API_URL;
+const API = "https://smart-bill-manager-1.onrender.com";
 
 const Dashboard = () => {
   const navigate = useNavigate();

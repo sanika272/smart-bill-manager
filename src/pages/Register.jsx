@@ -1,7 +1,7 @@
  import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
-
+const BASE_URL = "https://smart-bill-manager-1.onrender.com";
 function Register() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ function Register() {
     }
 
     try {
-      const res = await fetch("/api/users/register", {
+      const res = await fetch(`${BASE_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),

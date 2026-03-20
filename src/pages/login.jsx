@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.css";
 
+const BASE_URL = "https://smart-bill-manager-1.onrender.com";
 function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ function Login() {
     const password = e.target[1].value;
 
     try {
-      const res = await fetch("/api/users/login", {
+      const res = await fetch(`${BASE_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
