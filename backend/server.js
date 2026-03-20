@@ -352,7 +352,7 @@ const dayjs = require("dayjs");
 
 // Routes
 const userRoutes = require("./routes/userRoutes");
-const billRoutes = require("./routes/billRoutes");
+const billRoutes = require("./routes/Bills");
 
 // Utils
 const checkDueTodayEmails = require("./utils/emailscheduler");
