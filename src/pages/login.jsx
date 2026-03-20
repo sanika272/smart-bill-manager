@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./login.css";
 
 const BASE_URL = "https://smart-bill-manager-1.onrender.com";
+
 function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -15,22 +16,32 @@ function Login() {
     const password = e.target[1].value;
 
     try {
+      // ✅ POST request to login endpoint
       const res = await fetch(`${BASE_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      // ✅ parse JSON safely
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        setError("Server returned invalid response");
+        return;
+      }
 
       if (res.status === 200) {
+        // ✅ store token & user in localStorage
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user)); 
-        navigate("/dashboard");
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/dashboard"); // ✅ redirect after successful login
       } else {
         setError(data.message || "Login failed");
       }
     } catch (err) {
+      // ✅ catch network/server errors
       setError("Server error: " + err.message);
     }
   };
@@ -57,7 +68,3 @@ function Login() {
 }
 
 export default Login;
-
-
-
- 

@@ -20,13 +20,37 @@ function Reports() {
 
   const fetchBills = async () => {
     const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login again");
+      window.location.href = "/login"; // ✅ Redirect if no token
+      return;
+    }
 
-    const res = await fetch(`${BASE_URL}/api/bills`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const res = await fetch(`${BASE_URL}/api/bills`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const data = await res.json();
-    setBills(data);
+      // ✅ Safe JSON parsing
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        console.error("Failed to parse JSON:", jsonErr);
+        alert("Server error. Please try again.");
+        return;
+      }
+
+      if (!res.ok) {
+        alert(data.message || "Failed to fetch bills");
+        return;
+      }
+
+      setBills(data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch bills from server");
+    }
   };
 
   const paidAmount = bills
@@ -63,4 +87,3 @@ function Reports() {
 }
 
 export default Reports;
-

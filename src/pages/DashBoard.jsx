@@ -155,7 +155,6 @@
 
 // export default Dashboard;
 
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -171,10 +170,16 @@ const Dashboard = () => {
   const [budget, setBudget] = useState(user?.monthlyBudget || 0);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login first"); // ✅ alert user
+      navigate("/login");          // ✅ redirect if no token
+      return;
+    }
     fetchBills();
   }, []);
 
-  // ✅ Fetch Bills
+  // ✅ Fetch bills safely
   const fetchBills = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -184,51 +189,60 @@ const Dashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // ✅ Safe access: backend might send data differently
       setBills(res.data.bills || res.data || []);
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      alert("Failed to fetch bills. Please login again."); // ✅ user-friendly
       navigate("/login");
     }
   };
 
-  // ✅ Update Budget
+  // ✅ Update monthly budget
   const handleBudgetUpdate = async () => {
     try {
       const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
 
       const res = await axios.put(
         `${API}/api/users/update-budget`,
         { monthlyBudget: budget },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       localStorage.setItem("user", JSON.stringify(res.data.user));
       alert("Budget updated!");
     } catch (error) {
+      console.error(error);
       alert("Failed to update budget");
     }
   };
 
-  // ✅ Delete Bill
+  // ✅ Delete a bill safely
   const handleDelete = async (id) => {
-    try {
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/login");
 
+    try {
       await axios.delete(`${API}/api/bills/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setBills(bills.filter((bill) => bill._id !== id));
+      // ✅ update UI immediately
+      setBills((prevBills) => prevBills.filter((bill) => bill._id !== id));
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      alert("Failed to delete bill");
     }
   };
 
+  // ✅ Calculations
   const totalBills = bills.length;
   const totalAmount = bills.reduce((sum, bill) => sum + Number(bill.amount), 0);
   const unpaidBills = bills.filter((bill) => !bill.paid).length;
   const isExceeded = totalAmount > budget;
   const exceededAmount = totalAmount - budget;
+
   return (
     <div className="dashboard">
       {/* Navbar */}
@@ -291,11 +305,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {totalAmount > budget && (
+      {isExceeded && (
         <p style={{ color: "red", fontWeight: "bold" }}>
           ⚠️ You have exceeded your monthly budget by ₹ {exceededAmount}
         </p>
       )}
+
       {/* Bills Section */}
       <div className="upcoming">
         <h3>Your Bills</h3>

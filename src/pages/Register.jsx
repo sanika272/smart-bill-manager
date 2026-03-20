@@ -1,7 +1,9 @@
  import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
+
 const BASE_URL = "https://smart-bill-manager-1.onrender.com";
+
 function Register() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -16,27 +18,37 @@ function Register() {
     const password = form.password.value;
     const confirmPassword = form.confirmPassword.value;
 
+    // ✅ Password matching check
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
     try {
+      // ✅ POST request to registration endpoint
       const res = await fetch(`${BASE_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await res.json();
+      // ✅ Safe JSON parsing
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        setError("Server returned invalid response");
+        return;
+      }
 
       if (res.status === 201) {
-        navigate("/login");
+        navigate("/login"); // ✅ Redirect to login on success
       } else {
-        setError(data.message || "Registration failed");
+        setError(data.message || "Registration failed"); // ✅ Show proper error
       }
     } catch (err) {
-      setError("Server error");
+      // ✅ Catch network/server errors
+      setError("Server error: " + err.message);
     }
   };
 
@@ -50,7 +62,12 @@ function Register() {
             <input type="text" name="name" placeholder="Full Name" required />
             <input type="email" name="email" placeholder="Email address" required />
             <input type="password" name="password" placeholder="Password" required />
-            <input type="password" name="confirmPassword" placeholder="Confirm Password" required />
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              required
+            />
             <button type="submit">Register</button>
           </form>
           {error && <p className="error-msg">{error}</p>}
@@ -64,4 +81,3 @@ function Register() {
 }
 
 export default Register;
-
