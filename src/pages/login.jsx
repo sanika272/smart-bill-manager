@@ -9,7 +9,7 @@ function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();//prevent defualt is used to avoid refrese of page 
     setError("");
 
     const email = e.target[0].value;
@@ -26,7 +26,7 @@ function Login() {
       // ✅ parse JSON safely
       let data;
       try {
-        data = await res.json();
+        data = await res.json();//i did treavel as string but due to this sentence it again gets converted to object 
       } catch (jsonErr) {
         console.error("Failed to parse JSON:", err);
         setError("Server returned invalid response");
@@ -36,7 +36,7 @@ function Login() {
       if (res.status === 200) {
         // ✅ store token & user in localStorage
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("user", JSON.stringify(data.user));//here we can't store it as a object bcoz local storage only store strings so we again use json/stringy here .
         navigate("/dashboard"); // ✅ redirect after successful login
       } else {
         setError(data.message || "Login failed");
